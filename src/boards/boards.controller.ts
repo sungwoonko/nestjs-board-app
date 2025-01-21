@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { Board } from './boards.entity';
 import { title } from 'process';
@@ -13,6 +13,14 @@ export class BoardsController {
     getAllBoards(): Board[] {
         return this.boardsService.getAllBoards();
     }
+
+
+    // 특정 게시글 조회 기능 
+    @Get('/:id')
+    getBoardDetailById(@Param('id')id: number): Board {
+        return this.boardsService.getBoardDetailById(id);
+    }
+
 
     // 게시글 작성 기능
     @Post('/')
