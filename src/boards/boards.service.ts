@@ -3,6 +3,7 @@ import { Board } from './boards.entity';
 import { BoardStatus } from './boards-status.enum';
 import { createBoardDto } from './dto/create-board.dto';
 import { stat } from 'fs';
+import { UpdateBoardDto } from './dto/update-board.dto';
 
 @Injectable()
 export class BoardsService {
@@ -38,6 +39,17 @@ export class BoardsService {
 
         const saveBoard = this.boards.push(board);
         return saveBoard;
+    }
+
+    // 특정 번호의 게시글 수정
+    updateBoardById(id: number,updateBoardDto: UpdateBoardDto): Board{
+        const foundBoard = this.getBoardDetailById(id);
+        const {title,contents} = updateBoardDto;
+
+        foundBoard.title = title;
+        foundBoard.contents = contents;
+
+        return foundBoard;
     }
 
     // 특정 번호의 게시글 일부 수정
