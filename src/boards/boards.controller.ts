@@ -5,8 +5,10 @@ import { title } from 'process';
 import { createBoardDto } from './dto/create-board.dto';
 import { BoardStatus } from './boards-status.enum';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('api/boards')
+@UsePipes(ValidationPipe)
 export class BoardsController {
     // 생성자 주입
     constructor(private boardsService :BoardsService){}
@@ -33,7 +35,6 @@ export class BoardsController {
 
     // 게시글 작성 기능
     @Post('/')
-    @UsePipes(ValidationPipe)
     createBoards(@Body() createBoardDto: createBoardDto) {
         return this.boardsService.createBoard(createBoardDto);
     }
@@ -52,7 +53,7 @@ export class BoardsController {
     @Patch('/:id')
     updateBoardStatusById(
         @Param('id') id: number,
-        @Body('status')status: BoardStatus): Board{
+        @Body('status', BoardStatusValidationPipe )status: BoardStatus): Board{
         return this.boardsService.updateBoardStatusById(id,status);
     }
 
