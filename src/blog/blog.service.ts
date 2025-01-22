@@ -35,7 +35,7 @@ export class BlogService {
         return foundBlogs;  
     }  
 
-    // 게시글 작성 기능
+    // 블로그 작성 기능
     createBlog(createBlogDto: createBlogDto){
         const {author,title,contents} = createBlogDto;
 
