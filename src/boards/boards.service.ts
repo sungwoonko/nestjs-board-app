@@ -35,25 +35,24 @@ export class BoardsService {
     // }  
 
     // 게시글 작성 기능
-    createBoard(createBoardDto: createBoardDto){
+    async createBoard(createBoardDto: createBoardDto):Promise<string>{
         const {author,title,contents} = createBoardDto;
 
         // // 유효성 검사  
         if (!author || !title || !contents) {  
             throw new BadRequestException(`작성자, 제목, 그리고 내용을 모두 입력해야 합니다.`);  
-        
         }
            
         const board: Board = {
-            id: this.boards.length + 1, // 임시 Auto Increament 기능
-            author,
+            id: 0, // 임시 초기화
+            author, // author : createBoardDto.author
             title,
             contents,
             status: BoardStatus.PUBLIC
         }
 
-        const saveBoard = this.boards.push(board);
-        return saveBoard;
+        const createBoard = await this.boardRepository.saveBoard(board);
+        return createBoard;
     } 
 
 //     // 특정 번호의 게시글 수정  
