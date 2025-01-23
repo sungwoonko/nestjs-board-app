@@ -6,6 +6,7 @@ import { createBoardDto } from './dto/create-board.dto';
 import { BoardStatus } from './boards-status.enum';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
+import { BoardResponseDto } from './dto/board-response.dto';
 
 @Controller('api/boards')
 @UsePipes(ValidationPipe)
@@ -15,8 +16,10 @@ export class BoardsController {
     
     // 게시글 조회 기능 
     @Get('/')
-    getAllBoards(): Promise<Board[]> {
-        return await this.boardsService.getAllBoards();
+    async getAllBoards(): Promise<BoardResponseDto[]> {
+        const boards: Board[] = await this.boardsService.getAllBoards();
+        const boardsResponseDto = boards.map(board => new BoardResponseDto(board));
+        return boardsResponseDto;
     }
 
 
@@ -35,7 +38,7 @@ export class BoardsController {
 
     // 게시글 작성 기능
     @Post('/')
-    createBoards(@Body() createBoardDto: createBoardDto) {
+    async createBoards(@Body() createBoardDto: createBoardDto): Promise<string> {
         return this.boardsService.createBoard(createBoardDto);
     }
 
