@@ -3,6 +3,7 @@ import { createPool,Pool} from "mysql2/promise";
 import { databaseConfig } from "../configs/database.config";
 import { error } from "console";
 import { Board } from "./boards.entity";
+import { query } from "express";
 
 @Injectable()
 export class BoardsRepository{
@@ -27,4 +28,15 @@ export class BoardsRepository{
         }
     }
 
+    // 게시글 작성관련 데이터 엑세스 
+    async saveBoard(board: Board){
+        const insertQuery = `INSERT INTO board(author,title,contents,status) VALUES (?,?,?,?)`;
+        try{
+            const result = await this.connectPool.query(insertQuery,[board.author,board.title,board.contents,board.status])
+            const message = "Created success!"
+            return message;
+        }catch(err){
+            throw new InternalServerErrorException('Database query failed',err);   
+        }
+    }
 }
