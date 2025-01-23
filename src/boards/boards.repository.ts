@@ -17,7 +17,7 @@ export class BoardsRepository{
     }
 
     // 게시글 조회관련 데이터 엑세스
-    async fingAll(): Promise<Board[]> {
+    async findAll(): Promise<Board[]> {
         const selectQuery = `SELECT * FROM board`;
         try{
            const[result] = await this.connectPool.query(selectQuery)
