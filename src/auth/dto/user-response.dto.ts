@@ -10,4 +10,4 @@ export class UserResponseDto{
         this.role = user.role;
         
     }
-}
+} 
