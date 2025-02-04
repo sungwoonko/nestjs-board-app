@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User} from './users.entity';
 import { Repository } from 'typeorm';
@@ -6,13 +6,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UserRole } from './users-role.enum';
 import { LoginUserDto } from './dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectRepository(User)
-        private userRepository: Repository<User>
+        private userRepository: Repository<User>,
+        private jwtService: JwtService
     ){}
 
     // 회원 가입 기능
@@ -41,15 +44,32 @@ export class AuthService {
     // 로그인 기능
     async singIn(loginUserDto: LoginUserDto): Promise<string> {
         const {email, password} = loginUserDto;
+        
+        try{
+            const existingUser = await this.findUserByEmail(email);
 
-        const existingUser = await this.findUserByEmail(email);
+            if(!existingUser || !(await bcrypt.compare(password, existingUser.password))){
+                throw new UnauthorizedException('Invalid credentials');
+            }
 
-        if(!existingUser || !(await bcrypt.compare(password, existingUser.password))){
-            throw new UnauthorizedException('Invalid credentials');
+            // [1] JWT 토큰 생성
+            const payload = {
+                id: existingUser.id,
+                password: existingUser.password,
+                email: existingUser.email,
+                username: existingUser.username,
+                role: existingUser.role
+            };
+            const accessToken = await this.jwtService.sign(payload);
+
+            return accessToken;
+        } catch (error) {
+            throw error;
         }
-        const message ='Login success';
-        return message;
+    
     }
+
+
 
     async findUserByEmail(email: string): Promise<User>{
         const existingUser = await this.userRepository.findOne({where: {email}});
