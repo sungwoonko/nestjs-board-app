@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User} from './users.entity';
 import { Repository } from 'typeorm';
@@ -19,6 +19,9 @@ export class AuthService {
         if (!username || !password || !email || !role) {  
             throw new BadRequestException('Something went wrong.');  
         }
+
+        await this.checkEmailExist(email);
+
         const newUser: User = {
             id: 0, // 임시 초기화
             username, // author : createBoardDto.author
@@ -29,4 +32,11 @@ export class AuthService {
         const createdUser = await this.userRepository.save(newUser);
         return createdUser;
     } 
+
+    async checkEmailExist(email: string): Promise<void> {
+        const existingUser = await this.userRepository.findOne({where: {email}});
+        if(existingUser){
+            throw new ConflictException('Email already exists');
+        }
+    }
 }
