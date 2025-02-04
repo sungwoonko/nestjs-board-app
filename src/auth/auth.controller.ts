@@ -1,7 +1,18 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UserResponseDto } from './dto/user-response.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
-@Controller('auth')
+@Controller('api/auth')
 export class AuthController {
-    constructor(private authservice: AuthService){}
+    constructor(private authService: AuthService){}
+
+      // 회원 가입 기능
+        @Post('/signup')
+        async createUser(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
+            const userResponseDto = new UserResponseDto(await this.authService.createUser(createUserDto));
+            return userResponseDto;
+        }
+    
 }
+ 
