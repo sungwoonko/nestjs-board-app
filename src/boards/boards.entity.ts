@@ -20,6 +20,6 @@ export class Board{
     @Column()
     status: BoardStatus;
 
-    @ManyToMany(Type => User, user => user.boards, {eager: false})
+    @ManyToMany(Type => User, user => user.boards, {eager: false}) // == lazy loading 상태
     user: User;
 }

@@ -5,6 +5,7 @@ import { createBoardDto } from './dto/create-board.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UpdateBoardDto } from './dto/update-board.dto';
+import { User } from 'src/auth/users.entity';
 
 
 @Injectable()  
@@ -40,21 +41,20 @@ export class BoardsService {
     }  
 
     // 게시글 작성 기능
-    async createBoard(createBoardDto: createBoardDto):Promise<Board>{
-        const {author,title,contents} = createBoardDto;
+    async createBoard(createBoardDto: createBoardDto, logginedUser: User):Promise<Board>{
+        const { title,contents} = createBoardDto;
 
         // // 유효성 검사  
-        if (!author || !title || !contents) {  
-            throw new BadRequestException(`작성자, 제목, 그리고 내용을 모두 입력해야 합니다.`);  
+        if (!title || !contents) {  
+            throw new BadRequestException('Title and contents must be provided.');  
         }
-        const newboard: Board = {
-            id: 0, // 임시 초기화
-            author, // author : createBoardDto.author
+        const newboard = this.boardRepository.create({
+            author: logginedUser.username,
             title,
             contents,
             status: BoardStatus.PUBLIC,
-            user : null
-        }
+            user: logginedUser
+        });
         const createBoard = await this.boardRepository.save(newboard);
         return createBoard;
     } 
