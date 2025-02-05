@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { BoardStatus } from "./boards-status.enum";
+import { User } from "src/auth/users.entity";
 
 
 @Entity()
@@ -18,4 +19,7 @@ export class Board{
 
     @Column()
     status: BoardStatus;
+
+    @ManyToMany(Type => User, user => user.boards, {eager: false})
+    user: User;
 }

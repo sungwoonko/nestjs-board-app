@@ -31,11 +31,12 @@ export class AuthService {
         const hashedPassword = await this.hashPassword(password);
 
         const newUser: User = {
-            id: 0, // 임시 초기화
-            username, // author : createBoardDto.author
+            id: 0, 
+            username,
             password: hashedPassword,
             email,
-            role: UserRole.USER
+            role: UserRole.USER,
+            boards: []
         };
         const createdUser = await this.userRepository.save(newUser);
         return createdUser;
