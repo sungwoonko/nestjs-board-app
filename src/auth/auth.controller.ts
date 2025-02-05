@@ -25,13 +25,9 @@ export class AuthController {
           const accessToken = await this.authService.singIn(loginUserDto);
 
           // [2] JWT를 쿠키에 저장
-          res.cookie('Authorization', accessToken,{
-            httpOnly: true, 
-            secure: false,
-            maxAge: 3600000,
-            sameSite: 'none'  
-          });
-          res.send({message: "Login Success"});
+          res.setHeader('Authorization', accessToken);
+
+          res.send({message: "Login Success", accessToken});
       }
 
       @Post('/test')

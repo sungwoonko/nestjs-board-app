@@ -3,8 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { Repository } from "typeorm";
-import { User } from "./users.entity";
-import { Request } from 'express'; 
+import { User } from "./users.entity"; 
 import * as dotenv from 'dotenv';
 
 
@@ -19,13 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy){
         // [3] Cookie에 있는 JWT 토큰 추출
         super({
            secretOrKey: process.env.JWT_SECRET, // 검증하기 위한 Secret Key
-           jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
-                let token = null;
-                if(req && req.cookies){
-                    token = req.cookies['Authorization']; // 쿠키에서 JWT 토큰 추출
-                }
-                return token;
-           }])
+           jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Authorization 헤더에서 JWT 추출
         })
     } // [4] Secret Key로 검증 - 해당 인스턴스가 생성되는 시점 자체가 검증과정
 
@@ -33,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy){
     async validate(payload){
         const {email} = payload;
 
-        const user: User = await this.userRepository.findOneBy({ email : email});
+        const user: User = await this.userRepository.findOneBy({ email});
 
         if (!user) {
             throw new UnauthorizedException();
