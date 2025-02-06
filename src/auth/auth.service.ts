@@ -1,5 +1,4 @@
 import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { User} from '../user/user.entity';
 import * as bcrypt from 'bcryptjs';
 import { SignInRequestDto } from './dto/sign-in-request.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -17,8 +16,8 @@ export class AuthService {
 
 
 
-    // 로그인 기능
-    async singIn(signInRequestDto: SignInRequestDto): Promise<string> {
+      //Sign-in
+      async singIn(signInRequestDto: SignInRequestDto): Promise<string> {
         this.logger.verbose(`User with email: ${signInRequestDto.email} is signing in`);
 
         const {email, password} = signInRequestDto;

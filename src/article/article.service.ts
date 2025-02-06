@@ -15,7 +15,7 @@ export class ArticleService {
         @InjectRepository(Article)
         private articleRepository: Repository<Article>
     ){}
-    // 게시글 작성 기능
+    // CREATE
     async createArticle(createArticleRequestDto: CreateArticleRequestDto, logginedUser: User):Promise<Article>{
         this.logger.verbose(`User ${logginedUser.username} is creating a new article with title: ${createArticleRequestDto.title}`);
 
@@ -37,7 +37,7 @@ export class ArticleService {
         return createArticle;
     } 
 
-    // 게시글 조회 기능  
+    // READ - all
     async getAllArticles(): Promise<Article[]> { 
         this.logger.verbose(`Retrieving all Articles`);
         
@@ -47,7 +47,7 @@ export class ArticleService {
         return foundArticles;  
     }  
 
-    // 로그인된 유자가 작성한 게시글 조회 기능  
+    // READ - by Loggined User
     async getMyAllArticles(logginedUser: User): Promise<Article[]> {  
         this.logger.verbose(`Retrieving ${logginedUser.username}'s all Articles`);
 
@@ -61,7 +61,7 @@ export class ArticleService {
     }  
 
 
-    // 특정 게시글 조회 기능  
+    // READ - by id 
     async getArticleDetailById(id: number): Promise<Article> {
         this.logger.verbose(`Retrieving a article by id: ${id}`);
 
@@ -78,7 +78,7 @@ export class ArticleService {
         return foundArticle;        
     }  
 
-    // 키워드(작성자)로 검색한 게시글 조회 기능  
+    // READ - by keyword
     async getArticlesByKeyword(author: string): Promise<Article[]> {
         this.logger.verbose(`Retrieving a article by author: ${author}`);
   
@@ -92,7 +92,7 @@ export class ArticleService {
     }  
 
 
-    // 특정 번호의 게시글 수정  
+    // UPDATE - by id
     async updateArticleById(id: number, updateArticleRequestDto: UpdateArticleRequestDto): Promise<Article> {  
         this.logger.verbose(`Updating a article by id: ${id} with updateArticleRequestDto`);
 
@@ -109,7 +109,7 @@ export class ArticleService {
         return updatedArticle;  
     } 
 
-    // 특정 번호의 게시글 일부 수정  
+    // UPDATE - status <ADMIN>
     async updateArticleStatusById(id: number, status: ArticleStatus): Promise<void> { 
         this.logger.verbose(`ADMIN is Updating a article by id: ${id} with status: ${status}`);
  
@@ -121,7 +121,7 @@ export class ArticleService {
         this.logger.verbose(`ADMIN Updated a article's status ${id} by ${status} Successfully`);
     } 
 
-    // 게시글 삭제 기능  
+    // DELETE - by id
     async deleteArticleById(id: number, logginedUser: User): Promise<void> {  
         this.logger.verbose(`User: ${logginedUser.username} is Deleting a article by id: ${id}`);
 

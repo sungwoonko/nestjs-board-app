@@ -19,10 +19,9 @@ import { User } from 'src/user/user.entity';
 export class ArticleController {
     private readonly logger = new Logger(ArticleController.name);
 
-    // 생성자 주입
     constructor(private articleService :ArticleService){}
 
-    // 게시글 작성 기능
+    // CREATE
     @Post('/')
     async createArticle(
         @Body() createArticleRequestDto: CreateArticleRequestDto,
@@ -35,7 +34,7 @@ export class ArticleController {
         return articleResponseDto;
     }    
     
-    // 게시글 조회 기능 
+    // READ - all
     @Get('/')
     @Roles(UserRole.USER)
     async getAllArticles(): Promise<ArticleResponseDto[]> {
@@ -48,7 +47,7 @@ export class ArticleController {
         return articlesResponseDto;
     }
 
-    // 나의 게시글 조회 기능(로그인 유저) 
+    // READ - by Loggined User
     @Get('/myarticles')
     async getMyAllArticles(@GetUser() logginedUser: User): Promise<ArticleResponseDto[]> {
         this.logger.verbose(`Retrieving ${logginedUser.username}'s all Articles`);
@@ -61,7 +60,7 @@ export class ArticleController {
     }
 
 
-    // 특정 게시글 조회 기능 
+    // READ - by id 
     @Get('/:id')
     async getArticleDetailById(@Param('id')id: number): Promise<ArticleResponseDto> {
         this.logger.verbose(`Retrieving a article by id: ${id}`);
@@ -72,7 +71,7 @@ export class ArticleController {
         return articleResponseDto;
     }
 
-    // 키워드(작성자)로 검색한 게시글 조회 기능
+    // READ - by keyword
     @Get('/search/:keyword')
     async getArticlesByKeyword(@Query('author')author: string): Promise<SearchArticleResponseDto[]> {
         this.logger.verbose(`Retrieving a article by author: ${author}`);
@@ -85,7 +84,7 @@ export class ArticleController {
     }
 
 
-    // 특정 번호의 게시글 수정
+    // UPDATE - by id
     @Put('/:id')
     async updateArticleById(
         @Param('id')id: number,
@@ -100,7 +99,7 @@ export class ArticleController {
     }
 
 
-    // 특정 번호의 게시글 일부 수정<ADMIN 기능> 
+    // UPDATE - status <ADMIN>
     @Patch('/:id')
     @Roles(UserRole.ADMIN)
     async updateArticleStatusById(
@@ -114,7 +113,7 @@ export class ArticleController {
     }
 
 
-    // 게시글 삭제 기능
+    // DELETE - by id
     @Delete('/:id')
     @Roles(UserRole.USER, UserRole.ADMIN)
     async deleteArticleById(@Param('id')id: number,@GetUser() logginedUser: User): Promise<void> {
