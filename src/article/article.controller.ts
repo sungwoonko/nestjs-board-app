@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { Article } from './article.entity';
 import { CreateArticleRequestDto } from './dto/create-article-request.dto';
@@ -8,9 +8,9 @@ import { UpdateArticleRequestDto } from './dto/update-article-request.dto';
 import { ArticleStatusValidationPipe } from './pipes/article-status-validation.pipe';
 import { ArticleStatus } from './article-status.enum';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/custom-role-guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from 'src/user/user-role.enum';
-import { RolesGuard } from 'src/auth/custom-role-guard';
 import { GetUser } from 'src/auth/get-user-decorator';
 import { User } from 'src/user/user.entity';
 
@@ -19,109 +19,101 @@ import { User } from 'src/user/user.entity';
 export class ArticleController {
     private readonly logger = new Logger(ArticleController.name);
 
-    constructor(private articleService :ArticleService){}
+    constructor(private articleService: ArticleService){}
 
     // CREATE
     @Post('/')
-    async createArticle(
-        @Body() createArticleRequestDto: CreateArticleRequestDto,
-        @GetUser() logginedUser: User): Promise<ArticleResponseDto> {
+    async createArticle(@Body() createArticleRequestDto: CreateArticleRequestDto, @GetUser() logginedUser: User): Promise<ArticleResponseDto> {
         this.logger.verbose(`User: ${logginedUser.username} is try to creating a new article with title: ${createArticleRequestDto.title}`);
 
-        const articleResponseDto = new ArticleResponseDto(await this.articleService.createArticle(createArticleRequestDto,logginedUser))
+        const articleResponseDto = new ArticleResponseDto(await this.articleService.createArticle(createArticleRequestDto, logginedUser))
 
-        this.logger.verbose(`Article created Successfully`);
+        this.logger.verbose(`Article title with ${articleResponseDto.title} created Successfully`);
         return articleResponseDto;
-    }    
-    
+    }
+
     // READ - all
     @Get('/')
     @Roles(UserRole.USER)
     async getAllArticles(): Promise<ArticleResponseDto[]> {
-        this.logger.verbose(`Retrieving all Articles`);
+        this.logger.verbose(`Try to Retrieving all Articles`);
 
-        const articles: Article[] = await this.articleService.getAllArticles();
+	    const articles: Article[] = await this.articleService.getAllArticles();
         const articlesResponseDto = articles.map(article => new ArticleResponseDto(article));
 
-        this.logger.verbose(`Retrieving all articles list Successfully`);
+        this.logger.verbose(`Retrieved all articles list Successfully`);
         return articlesResponseDto;
     }
 
     // READ - by Loggined User
     @Get('/myarticles')
     async getMyAllArticles(@GetUser() logginedUser: User): Promise<ArticleResponseDto[]> {
-        this.logger.verbose(`Retrieving ${logginedUser.username}'s all Articles`);
+        this.logger.verbose(`Try to Retrieving ${logginedUser.username}'s all Articles`);
 
         const articles: Article[] = await this.articleService.getMyAllArticles(logginedUser);
         const articlesResponseDto = articles.map(article => new ArticleResponseDto(article));
 
-        this.logger.verbose(`Retrieving ${logginedUser.username}'s all articles list Successfully`);
+        this.logger.verbose(`Retrieved ${logginedUser.username}'s all Articles list Successfully`);
         return articlesResponseDto;
     }
 
-
-    // READ - by id 
+    // READ - by id
     @Get('/:id')
-    async getArticleDetailById(@Param('id')id: number): Promise<ArticleResponseDto> {
-        this.logger.verbose(`Retrieving a article by id: ${id}`);
+    async getArticleDetailById(@Param('id') id: number): Promise<ArticleResponseDto> {
+        this.logger.verbose(`Try to Retrieving a article by id: ${id}`);
 
         const articleResponseDto = new ArticleResponseDto(await this.articleService.getArticleDetailById(id));
 
-        this.logger.verbose(`Retrieving a article by ${id} details Successfully`);
+        this.logger.verbose(`Retrieved a article by ${id} details Successfully`);
         return articleResponseDto;
     }
 
     // READ - by keyword
     @Get('/search/:keyword')
-    async getArticlesByKeyword(@Query('author')author: string): Promise<SearchArticleResponseDto[]> {
-        this.logger.verbose(`Retrieving a article by author: ${author}`);
+    async getArticlesByKeyword(@Query('author') author: string): Promise<SearchArticleResponseDto[]> {
+        this.logger.verbose(`Try to Retrieving a article by author: ${author}`);
 
         const articles: Article[] = await this.articleService.getArticlesByKeyword(author);
-        const articleResponseDto = articles.map(article => new SearchArticleResponseDto(article));
+        const articlesResponseDto = articles.map(article => new SearchArticleResponseDto(article));
 
-        this.logger.verbose(`Retrieving articles list by ${author} Successfully`);
-        return articleResponseDto;
+        this.logger.verbose(`Retrieved articles list by ${author} Successfully`);
+        return articlesResponseDto;
     }
-
 
     // UPDATE - by id
     @Put('/:id')
     async updateArticleById(
-        @Param('id')id: number,
-        @Body() updateArticleRequestDto: UpdateArticleRequestDto): Promise<ArticleResponseDto>{
-        this.logger.verbose(`Updating a article by id: ${id} with updateArticleRequestDto`);
+        @Param('id') id: number,
+        @Body() updateArticleRequestDto: UpdateArticleRequestDto): Promise<ArticleResponseDto> {
+        this.logger.verbose(`Try to Updating a article by id: ${id} with updateArticleRequestDto`);
 
-        const articleResponseDto = new ArticleResponseDto(await this.articleService.updateArticleById(id,updateArticleRequestDto));
+        const articleResponseDto = new ArticleResponseDto(await this.articleService.updateArticleById(id, updateArticleRequestDto))
 
         this.logger.verbose(`Updated a article by ${id} Successfully`);
         return articleResponseDto;
-
     }
-
 
     // UPDATE - status <ADMIN>
     @Patch('/:id')
     @Roles(UserRole.ADMIN)
     async updateArticleStatusById(
         @Param('id') id: number,
-        @Body('status', ArticleStatusValidationPipe)status: ArticleStatus): Promise<void>{
+        @Body('status', ArticleStatusValidationPipe) status: ArticleStatus): Promise<void> {
         this.logger.verbose(`ADMIN is trying to Updating a article by id: ${id} with status: ${status}`);
 
-        await this.articleService.updateArticleStatusById(id,status);
+        await this.articleService.updateArticleStatusById(id, status);
 
-        this.logger.verbose(`ADMIN Updated a article's status ${id} by ${status} Successfully`);
+        this.logger.verbose(`ADMIN Updated a article's by ${id} status to ${status} Successfully`);
     }
-
 
     // DELETE - by id
     @Delete('/:id')
     @Roles(UserRole.USER, UserRole.ADMIN)
-    async deleteArticleById(@Param('id')id: number,@GetUser() logginedUser: User): Promise<void> {
+    async deleteArticleById(@Param('id') id: number, @GetUser() logginedUser: User): Promise<void> {
         this.logger.verbose(`User: ${logginedUser.username} is trying to Deleting a article by id: ${id}`);
 
-        await this.articleService.deleteArticleById(id,logginedUser);
+        await this.articleService.deleteArticleById(id, logginedUser);
 
         this.logger.verbose(`Deleted a article by id: ${id} Successfully`);
     }
-
 }

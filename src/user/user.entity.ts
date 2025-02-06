@@ -3,8 +3,8 @@ import { UserRole } from "./user-role.enum";
 import { Article } from "src/article/article.entity";
 
 @Entity()
-export class User{
-    @PrimaryGeneratedColumn() 
+export class User {
+    @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
@@ -19,6 +19,6 @@ export class User{
     @Column()
     role: UserRole;
 
-    @OneToMany(Type => Article, article => article.author, { eager : false})
-    articles: Article[];
+    @OneToMany(Type => Article, article => article.author, { eager: false })
+    article: Article[];
 }
