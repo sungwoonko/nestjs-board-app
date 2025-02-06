@@ -19,6 +19,13 @@ import { User } from 'src/auth/users.entity';
 export class BoardsController {
     // 생성자 주입
     constructor(private boardsService :BoardsService){}
+
+    // 게시글 작성 기능
+    @Post('/')
+    async createBoards(@Body() createBoardDto: createBoardDto, @GetUser() logginedUser: User): Promise<BoardResponseDto> {
+        const boardResponseDto = new BoardResponseDto(await this.boardsService.createBoard(createBoardDto, logginedUser));
+        return boardResponseDto;
+    }    
     
     // 게시글 조회 기능 
     @Get('/')
@@ -53,13 +60,6 @@ export class BoardsController {
         return boardResponseDto;
     }
 
-
-    // 게시글 작성 기능
-    @Post('/')
-    async createBoards(@Body() createBoardDto: createBoardDto, @GetUser() logginedUser: User): Promise<BoardResponseDto> {
-        const boardResponseDto = new BoardResponseDto(await this.boardsService.createBoard(createBoardDto, logginedUser));
-        return boardResponseDto;
-    }
 
     // 특정 번호의 게시글 수정
     @Put('/:id')
