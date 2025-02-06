@@ -1,12 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User} from './user.entity';
-import { Repository } from 'typeorm';
-import { SignUpRequestDto } from './dto/sign-up-request.dto';
+import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { User} from '../user/user.entity';
 import * as bcrypt from 'bcryptjs';
-import { UserRole } from './user-role.enum';
 import { SignInRequestDto } from './dto/sign-in-request.dto';
 import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 
 @Injectable()
@@ -14,36 +11,11 @@ export class AuthService {
     private readonly logger = new Logger(AuthService.name);
     
     constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private userService: UserService
     ){}
 
-    // 회원 가입 기능
-    async createUser(signUpRequestDto: SignUpRequestDto):Promise<User>{
-        this.logger.verbose(`Visitor is creating a new account with title: ${signUpRequestDto.email}`);
 
-        const {username,password,email,role} = signUpRequestDto;    
-        // 유효성 검사  
-        if (!username || !password || !email || !role) {  
-            throw new BadRequestException('Something went wrong.');  
-        }
-
-        await this.checkEmailExist(email);
-
-        const hashedPassword = await this.hashPassword(password);
-
-        const newUser = this.userRepository.create({
-            username,
-            password: hashedPassword,
-            email,
-            role: UserRole.USER,
-        });
-        const createdUser = await this.userRepository.save(newUser);
-
-        this.logger.verbose(`New account email with ${createdUser.email} created Successfully`);
-        return createdUser;
-    } 
 
     // 로그인 기능
     async singIn(signInRequestDto: SignInRequestDto): Promise<string> {
@@ -52,7 +24,7 @@ export class AuthService {
         const {email, password} = signInRequestDto;
         
         try{
-            const existingUser = await this.findUserByEmail(email);
+            const existingUser = await this.userService.findUserByEmail(email);
 
             if(!existingUser || !(await bcrypt.compare(password, existingUser.password))){
                 throw new UnauthorizedException('Invalid credentials');
@@ -77,26 +49,4 @@ export class AuthService {
     
     }
 
-
-
-    async findUserByEmail(email: string): Promise<User>{
-        const existingUser = await this.userRepository.findOne({where: {email}});
-        if(!existingUser){
-            throw new NotFoundException('User not found');
-        }
-        return existingUser;
-    }
-
-    async checkEmailExist(email: string): Promise<void> {
-        const existingUser = await this.userRepository.findOne({where: {email}});
-        if(existingUser){
-            throw new ConflictException('Email already exists');
-        }
-       
-    }
-
-    async hashPassword(password: string): Promise<string>{
-       const salt = await bcrypt.genSalt(); // salt 생성
-       return await bcrypt.hash(password, salt);
-    }
 }

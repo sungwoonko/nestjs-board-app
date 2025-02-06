@@ -9,10 +9,10 @@ import { ArticleStatusValidationPipe } from './pipes/article-status-validation.p
 import { ArticleStatus } from './article-status.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/auth/roles.decorator';
-import { UserRole } from 'src/auth/user-role.enum';
+import { UserRole } from 'src/user/user-role.enum';
 import { RolesGuard } from 'src/auth/custom-role-guard';
 import { GetUser } from 'src/auth/get-user-decorator';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/user/user.entity';
 
 @Controller('api/articles')
 @UseGuards(AuthGuard(), RolesGuard)
