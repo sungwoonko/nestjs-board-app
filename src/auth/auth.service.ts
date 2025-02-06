@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException, Res, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User} from './users.entity';
 import { Repository } from 'typeorm';
@@ -12,6 +12,8 @@ import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
+    private readonly logger = new Logger(AuthService.name);
+    
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
@@ -20,6 +22,8 @@ export class AuthService {
 
     // 회원 가입 기능
     async createUser(createUserDto: CreateUserDto):Promise<User>{
+        this.logger.verbose(`Visitor is creating a new account with title: ${createUserDto.email}`);
+
         const {username,password,email,role} = createUserDto;    
         // 유효성 검사  
         if (!username || !password || !email || !role) {  
@@ -30,20 +34,22 @@ export class AuthService {
 
         const hashedPassword = await this.hashPassword(password);
 
-        const newUser: User = {
-            id: 0, 
+        const newUser = this.userRepository.create({
             username,
             password: hashedPassword,
             email,
             role: UserRole.USER,
-            boards: []
-        };
+        });
         const createdUser = await this.userRepository.save(newUser);
+
+        this.logger.verbose(`New account email with ${createdUser.email} created Successfully`);
         return createdUser;
     } 
 
     // 로그인 기능
     async singIn(loginUserDto: LoginUserDto): Promise<string> {
+        this.logger.verbose(`User with email: ${loginUserDto.email} is signing in`);
+
         const {email, password} = loginUserDto;
         
         try{
@@ -63,8 +69,10 @@ export class AuthService {
             };
             const accessToken = await this.jwtService.sign(payload);
 
+            this.logger.verbose(`User with email: ${loginUserDto.email} issued JWT ${accessToken}`)
             return accessToken;
         } catch (error) {
+            this.logger.error(`Invalid credentials or Internal Server error`);
             throw error;
         }
     

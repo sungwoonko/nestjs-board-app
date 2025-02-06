@@ -20,7 +20,8 @@ export class BoardsService {
         this.logger.verbose(`User ${logginedUser.username} is creating a new board with title: ${createBoardDto.title}`);
 
         const { title,contents} = createBoardDto;
-        if (!title || !contents) {  
+        if (!title || !contents) {
+            this.logger.error(`Title and contents must be provided.`);
             throw new BadRequestException('Title and contents must be provided.');  
         }
         const newboard = this.boardRepository.create({
