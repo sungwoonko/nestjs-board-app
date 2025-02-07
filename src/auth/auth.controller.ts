@@ -2,6 +2,7 @@ import { Body, Controller, Logger, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInRequestDto } from './dto/sign-in-request.dto';
 import { Response } from 'express';
+import { ApiResponseDto } from 'src/common/api-response-dto/api-response-dto';
 
 @Controller('api/auth')
 export class AuthController {
@@ -15,10 +16,14 @@ export class AuthController {
 
         const accessToken = await this.AuthService.signIn(signInRequestDto);
 
+        this.logger.verbose(`User with email: ${signInRequestDto.email} issued JWT ${accessToken}`);
+
         // [2] JWT를 헤더에 저장
         res.setHeader('Authorization', accessToken);
 
-        res.send({ message: "Login Success", accessToken });
-        this.logger.verbose(`User with email: ${signInRequestDto.email} issued JWT ${accessToken}`);
+        const response = new ApiResponseDto(true, 200, 'User logged in successfully', { accessToken });
+
+        res.send(response);
+      
     }
 }
