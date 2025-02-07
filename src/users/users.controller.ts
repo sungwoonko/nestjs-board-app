@@ -1,5 +1,5 @@
 import { Body, Controller, HttpStatus, Logger, Post } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { CreateUserRequestDto } from './dto/create-user-request.dto';
 import { ApiResponseDto } from 'src/common/api-response-dto/api-response-dto';
 
@@ -7,7 +7,7 @@ import { ApiResponseDto } from 'src/common/api-response-dto/api-response-dto';
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
-  constructor(private readonly usersService: UserService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   // CREATE
   @Post('/')

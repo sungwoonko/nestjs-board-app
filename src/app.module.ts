@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { UnauthorizedExceptionFilter } from './common/filters/unauthorization.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
-import { UserModule } from './user/user.module';
+import { UsersModule } from './users/users.module';
 
 
 
@@ -15,7 +15,7 @@ import { UserModule } from './user/user.module';
     TypeOrmModule.forRoot(typeOrmConfig),
     ArticleModule,
     AuthModule,
-    UserModule,
+    UsersModule,
   ],
 
   providers: [
