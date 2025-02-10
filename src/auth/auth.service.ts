@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@n
 import * as bcrypt from 'bcryptjs'
 import { SignInRequestDto } from './dto/sign-in-request.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
+import { UserService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +10,7 @@ export class AuthService {
 
     constructor(
         private jwtService: JwtService,
-        private userService: UsersService,
+        private userService: UserService,
     ) { }
 
     // Sign-in
