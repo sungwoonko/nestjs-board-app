@@ -8,5 +8,4 @@ export class CreateArticleRequestDto {
     @IsNotEmpty()
     @IsString()
     contents: string;
-
 }

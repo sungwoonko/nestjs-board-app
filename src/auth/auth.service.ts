@@ -1,28 +1,28 @@
-import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs'
 import { SignInRequestDto } from './dto/sign-in-request.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/users/users.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
     private readonly logger = new Logger(AuthService.name);
-
+    
     constructor(
         private jwtService: JwtService,
-        private userService: UserService,
-    ) { }
+        private userService: UsersService,
+    ){}
 
-    // Sign-in
-    async signIn(signInRequestDto: SignInRequestDto): Promise<string> {
+    // Sign-In
+    async signIn(signInRequestDto : SignInRequestDto): Promise<string> {
         this.logger.verbose(`User with email: ${signInRequestDto.email} is signing in`);
 
         const { email, password } = signInRequestDto;
 
-        try {
+        try{
             const existingUser = await this.userService.findUserByEmail(email);
-
-            if (!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
+            
+            if(!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
                 throw new UnauthorizedException('Invalid credentials');
             }
 

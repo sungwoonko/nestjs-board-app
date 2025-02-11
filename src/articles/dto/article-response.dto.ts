@@ -1,8 +1,8 @@
-import { Article } from "../entities/article.entity";
 import { ArticleStatus } from "../entities/article-status.enum";
+import { Article } from "../entities/article.entity";
 import { UserResponseDto } from "src/users/dto/user-response.dto";
 
-export class ArticleResponseDto{
+export class ArticleResponseDto {
     id: number;
     author: string;
     title: string;
@@ -10,14 +10,12 @@ export class ArticleResponseDto{
     status: ArticleStatus;
     // user: UserResponseDto;
 
-    constructor(article: Article){
+    constructor(article: Article) {
         this.id = article.id;
         this.author = article.author;
         this.title = article.title;
         this.contents = article.contents;
         this.status = article.status;
         // this.user = new UserResponseDto(article.user);
-        
-        
     }
 }

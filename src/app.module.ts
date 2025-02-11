@@ -1,5 +1,5 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { ArticleModule } from './articles/articles.module';
+import { ArticlesModule } from './articles/articles.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './configs/typeorm.config';
 import { AuthModule } from './auth/auth.module';
@@ -8,16 +8,13 @@ import { UnauthorizedExceptionFilter } from './common/filters/unauthorization.fi
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { UsersModule } from './users/users.module';
 
-
-
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
-    ArticleModule,
+    ArticlesModule,
     AuthModule,
-    UsersModule,
+    UsersModule
   ],
-
   providers: [
     {
       provide: APP_FILTER,
@@ -28,9 +25,9 @@ import { UsersModule } from './users/users.module';
       useClass: LoggingInterceptor,
     },
     {
-      provide: APP_PIPE,
-      useClass: ValidationPipe,
-  },
+        provide: APP_PIPE,
+        useClass: ValidationPipe,
+    },
   ]
 })
 export class AppModule {}

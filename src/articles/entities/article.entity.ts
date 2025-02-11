@@ -1,11 +1,10 @@
 import { Column, Entity, ManyToOne } from "typeorm";
-import { ArticleStatus } from "src/articles/entities/article-status.enum";
+import { ArticleStatus } from "./article-status.enum";
 import { User } from "src/users/entities/user.entity";
 import { CommonEntity } from "src/common/entities/common.entity";
 
 @Entity()
-export class Article extends CommonEntity{
-
+export class Article extends CommonEntity {
     @Column()
     author: string;
 
@@ -18,6 +17,6 @@ export class Article extends CommonEntity{
     @Column()
     status: ArticleStatus
 
-    @ManyToOne(Type => User, user => user.article, { eager: false })
+    @ManyToOne(Type => User, user => user.articles, { eager: false })
     user: User;
 }

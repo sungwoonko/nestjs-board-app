@@ -1,6 +1,6 @@
-import { IsNotEmpty, MaxLength } from "class-validator"
+import { IsNotEmpty, MaxLength } from "class-validator";
 
-export class SignInRequestDto{
+export class SignInRequestDto {
     @IsNotEmpty()
     @MaxLength(30)
     email: string;
@@ -8,5 +8,4 @@ export class SignInRequestDto{
     @IsNotEmpty()
     @MaxLength(30)
     password: string;
-
 }

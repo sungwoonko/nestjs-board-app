@@ -4,7 +4,7 @@ import { Article } from "src/articles/entities/article.entity";
 import { CommonEntity } from "src/common/entities/common.entity";
 
 @Entity()
-export class User extends CommonEntity{
+export class User extends CommonEntity {
     @Column()
     username: string;
 
@@ -18,5 +18,5 @@ export class User extends CommonEntity{
     role: UserRole;
 
     @OneToMany(Type => Article, article => article.author, { eager: false })
-    article: Article[];
+    articles: Article[];
 }

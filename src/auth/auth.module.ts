@@ -9,19 +9,19 @@ import { UsersModule } from 'src/users/users.module';
 
 dotenv.config();
 
-@Module({  
-  imports: [  
-      UsersModule,  
-      PassportModule.register({ defaultStrategy: 'jwt' }),  
-      JwtModule.register({  
-          secret: process.env.JWT_SECRET,  
-          signOptions: {  
-              expiresIn: process.env.JWT_EXPIRATION,  
-          }  
-      }),  
-  ],  
-  controllers: [AuthController],  
-  providers: [AuthService, JwtStrategy],  
-  exports: [JwtModule, PassportModule]  
-})  
+@Module({
+  imports: [
+    UsersModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions:{
+        expiresIn: process.env.JWT_EXPIRATION,
+      }
+    }),
+  ],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [JwtModule, PassportModule]
+})
 export class AuthModule {}
